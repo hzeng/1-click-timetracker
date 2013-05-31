@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+  <head>
+    <title>One-Click Timetracking</title>
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
+    <link href="css/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Raleway|Orbitron|Open+Sans:400,300,600' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.hoverIntent.js"></script>
+    <script src="js/jquery-ui-1.10.3.custom.js"></script>
+    <script src="js/main.js"></script>
+  </head>
+  <body>
+  
+    <div id="header">
+  	<div id="header-inner">
+	  <h1>One-Click TimeTracking</h1>
+	  <div id="system-actions">
+		<a class="system-action last-update">last logging <span id="last-update-time" style="font-size: 1em;">5m</span> ago</a>
+		<span> | </span>
+		<a class="system-action preference"><i class="icon-wrench icon-white"></i></a>
+	  </div>
+  	</div>
+  </div>
+  
+  
+  <div id="wrapper">
+  
+  
+  
+  
+  
+  
+
+  <div id="time-track">
+  	<div id="project-container">
+	  	
+  	</div>
+  	
+  	<div id="new-project-container">
+		
+		<form>
+			<input tyle="text" id="new-project-name" placeholder="Enter name to create new"/>
+			<div style="text-align: left"><a id="create-project">+ Project</a></div>
+		</form>
+  	</div>
+	<div style="display:none;" id="hidden-project-template">
+		<div class="project-wrapper">
+			<div class="project-main-window">
+				<div class="project-main-inner">
+					<div class="project-color-bar"></div>
+					<div class="project-title">Sample Project Template</div>
+					<div class="project-hour">
+						<span class="hour">6.5</span>
+						<span class="hour-unit">h</span>
+					</div>
+				</div>
+				<div class="project-edit-window">
+					<div class="add-hour">
+						<div class="add-hour-column">
+							<span class="add-sign">+</span>
+							<a>0.1</a>
+							<a>0.25</a>
+							<a>0.5</a>
+							<a>0.75</a>
+						</div>
+						<div class="add-hour-column">
+							<span class="add-sign">+</span>
+							<a>1</a>
+							<a>1.25</a>
+							<a>1.5</a>
+							<a>1.75</a>
+						</div>
+						<div class="add-hour-column">
+							<span class="add-sign">+</span>
+							<a>2</a>
+							<a>2.25</a>
+							<a>2.5</a>
+							<a>2.75</a>
+						</div>
+						<div class="add-hour-column">
+							<span class="add-sign">+</span>
+							<a>3</a>
+							<a>3.25</a>
+							<a>3.5</a>
+							<a>3.75</a>
+						</div>
+						<div class="add-hour-column last">
+							<span class="add-sign">+</span>
+							<a>4</a>
+							<a>4.25</a>
+							<a>4.5</a>
+							<a>4.75</a>
+						</div>
+						<div style="clear:both;"></div>
+					</div>
+					<div class="more-actions">
+						<div class="action change-color">
+							<a><i class="icon-tint icon-white"></i></a>
+							<div class="color-picker">
+								<a class="color-item color0"></a>
+								<a class="color-item color1"></a>
+								<a class="color-item color2"></a>
+								<a class="color-item color3"></a>
+								<a class="color-item color4"></a>
+								<a class="color-item color5"></a>
+								<a class="color-item color6"></a>
+								
+							</div>
+						</div>
+						<span> | </span>
+						<a class="action drag-project"><i class="icon-move icon-white"></i></a>
+						<span> | </span>
+						<a class="action clear-hour"><i class="icon-minus-sign icon-white"></i></a>
+						<span> | </span>
+						<a class="action remove-project"><i class="icon-trash icon-white"></i></a>
+					</div>
+				</div>
+
+				
+			</div>
+		</div>
+	</div>
+  </div>
+  <div id="log">
+	  <div class="log-entry">
+		  <span class="log-item">JIRA: DVG Slideshow Widget Debug<br/>+0.5h</span>
+		  <span class="time">5m ago</span>
+	  </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  </div>
+  </body>
+</html>
+

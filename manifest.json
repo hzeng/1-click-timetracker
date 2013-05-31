@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+
+  "name": "One-Click Timetracking",
+  "description": "Lightweight time tracking extension.",
+  "version": "1.0",
+
+  "permissions": [
+    "storage"
+  ],
+  "background": {
+    "page": "background.html"
+  },
+  "browser_action": {
+    "default_icon": "icon.png"
+  }
+}
