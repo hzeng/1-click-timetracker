@@ -1,4 +1,4 @@
-1-click-timetracker
+1-click TimeTracker
 ===================
 
 An ambient time tracker that serves you whenever you need but does not compete with you. 1-Click TimeTracker design is minimalist, yet useful enough as a functional time tracker:
