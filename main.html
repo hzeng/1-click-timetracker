@@ -12,6 +12,7 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery.hoverIntent.js"></script>
     <script src="js/jquery-ui-1.10.3.custom.js"></script>
+    <script src="js/date.js"></script>
     <script src="js/main.js"></script>
   </head>
   <body>
@@ -21,6 +22,10 @@
 	  <h1>One-Click TimeTracking</h1>
 	  <div id="system-actions">
 		<a class="system-action last-update">last logging <span id="last-update-time" style="font-size: 1em;">5m</span> ago</a>
+		<span> | </span>
+		<a class="system-action daily-summary"><span id="daily-hour-summary" style="font-size: 1em;">5m</span> today</a>
+		<span> | </span>
+		<a class="system-action weekly-summary"><span id="weekly-hour-summary" style="font-size: 1em;">5m</span> this week</a>
 		<span> | </span>
 		<a class="system-action preference"><i class="icon-wrench icon-white"></i></a>
 	  </div>

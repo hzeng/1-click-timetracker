@@ -1,62 +1,61 @@
-function changeHour(projectID, hour) {
-	var project = {};
-	var projectName = $("#project-container").find("[data-id='" + projectID + "']").find(".project-title").html();
-	var color = $("#project-container").find("[data-id='" + projectID + "']").find(".project-main-window").css("backgroundColor");
-	var order = $("#project-container").find("[data-id='" + projectID + "']").attr("data-order");
-	console.log("projectName: " +projectName);
-	console.log("projectID: " +projectID);
-	console.log("hour: " +hour);
-	console.log("color: " +color);
+function changeHour(projectID, hour, hourIncrement) {
+	
 	hour = hour.toFixed(2);
 	if (hour.slice(-3)==".00") {hour = hour.substring(0, hour.length - 3);}
 	else if (hour.slice(-1)=="0") {hour = hour.substring(0, hour.length - 1);}
-	project['project-'+projectID] = {"id": projectID, "name": projectName, "hour": hour, "color": color, "order": order};
-	chrome.storage.sync.set(project, function(){
-		$(".project-wrapper").find("[data-id='" + projectID + "']").find(".hour").html(hour);
-		//initiatePage();
+	var timeStamp = Math.round(new Date().getTime() / 1000); 
+	
+	chrome.storage.sync.get('project-' + projectID, function(project){	
+		project['project-' + projectID].hour = hour;
+		if (project['project-' + projectID].history == null){
+			var history = [];
+			project['project-' + projectID]['history'] = history;
+		}
+		project['project-' + projectID].history.push({"hourIncrement": hourIncrement, "timeStamp": timeStamp});
+		
+		chrome.storage.sync.set(project, function(){
+			$(".project-wrapper").find("[data-id='" + projectID + "']").find(".hour").html(hour);
+			getHourSummary("today");
+			getHourSummary("this week");
+		});
 	});
+
 	writeLog("hourLogging");
 }
 
 function changeColor(projectID, color) {
-	var project = {};
-	var projectName = $(".project-wrapper").find("[data-id='" + projectID + "']").find(".project-title").html();
-	var hour = $(".project-wrapper").find("[data-id='" + projectID + "']").find(".hour").html();
-	var order = $("#project-container").find("[data-id='" + projectID + "']").attr("data-order");
-	
-	project['project-'+projectID] = {"id": projectID, "name": projectName, "hour": hour, "color": color, "order": order};
-	chrome.storage.sync.set(project, function(){
-		$("#project-container").find("[data-id='" + projectID + "']").find(".project-main-window").css("background-color", color);
-		//initiatePage();
+	chrome.storage.sync.get('project-' + projectID, function(project){	
+		project['project-' + projectID].color = color;
+		chrome.storage.sync.set(project, function(){
+			$("#project-container").find("[data-id='" + projectID + "']").find(".project-main-window").css("background-color", color);
+		});
 	});
 }
 
 function updateOrder(){
 	var projects = $("#project-container .project-wrapper");
 	projects.each(function(){
+		
 		// apply order data to this project
 		$(this).attr("data-order", $(this).index());
 		$(this).find("*").attr("data-order", $(this).index());
 		
-		// prepare chrome data write
-		var project = {};
-		var projectID = $(this).attr("data-id");
-		var projectName = $(this).find(".project-title").html();
-		var color = $(this).find(".project-main-window").css("backgroundColor");
-		var hour = $(this).find(".hour").html();
 		var order = $(this).attr("data-order");
-		project['project-'+projectID] = {"id": projectID, "name": projectName, "hour": hour, "color": color, "order": order};
+		var projectID = $(this).attr("data-id");
 		
-		chrome.storage.sync.set(project, function(){
-			//$("#project-container").find("[data-id='" + projectID + "']").find(".project-main-window").css("background-color", color);
-			//initiatePage();
-	});
-
+		// write to chrome
+		chrome.storage.sync.get('project-' + projectID, function(project){	
+			project['project-' + projectID].order = order;
+			chrome.storage.sync.set(project, function(){
+		
+			});
+		});
+	
 	});
 	
 }
 
-function writeLog(action, timeStamp){
+function writeLog(action){
 	if (action == "hourLogging"){
 		var timeStamp = Math.round(new Date().getTime() / 1000);
 		chrome.storage.sync.set({"hourLogging": timeStamp}, function(){
@@ -67,15 +66,65 @@ function writeLog(action, timeStamp){
 
 function getLastHourLogging(){
 	chrome.storage.sync.get("hourLogging", function(data){
-		$("#last-update-time").attr("data", data.hourLogging);
-		updateLastHourLogging();
+		if(data.hourLogging){
+			$("#last-update-time").attr("data", data.hourLogging);
+			$(".last-update").show();
+			updateLastHourLogging();
+		}
+		else{
+			$(".last-update").hide();
+		}
 	});
 }
 
 function updateLastHourLogging(){
 	var timeAgo = Math.round(new Date().getTime() / 1000) - parseInt($("#last-update-time").attr("data"));
 	$("#last-update-time").html(timeAgo.toHumanTime());
-	//console.log("updated hour logging");
+}
+
+function getHourSummary(date){
+
+	if (date == "today"){
+		var startTime = Math.round(new Date().setHours(0,0,0,0) / 1000);
+		var endTime = startTime + 24 * 60 * 60;
+		
+		chrome.storage.sync.get(null, function(data){
+			var dailyTotal = 0;
+			jQuery.each(data, function(i, val) {
+				if(val.id && val.history){// if project
+					jQuery.each(val.history, function(n, log){
+						if (log.timeStamp >= startTime && log.timeStamp < endTime){
+							dailyTotal = parseInt(dailyTotal) + (log.hourIncrement * 60 * 60);
+							console.log(dailyTotal);
+						}
+					});
+				}
+			});
+			$("#daily-hour-summary").html(dailyTotal.toHumanTime());				
+		});
+	}
+	
+	if (date == "this week"){
+		
+		var monday = Math.round(Date.monday().getTime()/ 1000);
+		var sunday = monday + 60*60*24*7;
+		
+		chrome.storage.sync.get(null, function(data){
+			var weeklyTotal = 0;
+			jQuery.each(data, function(i, val) {
+				if(val.id && val.history){// if project
+					jQuery.each(val.history, function(n, log){
+						if (log.timeStamp >= monday && log.timeStamp < sunday){
+							weeklyTotal = parseInt(weeklyTotal) + (log.hourIncrement * 60 * 60);
+							console.log("w" + weeklyTotal);
+						}
+					});
+				}
+			});
+			$("#weekly-hour-summary").html(weeklyTotal.toHumanTime());				
+		});
+	}
+	
 }
 
 Number.prototype.toHumanTime = function () {
@@ -100,17 +149,6 @@ Number.prototype.toHumanTime = function () {
 }
 
 function removeProject(projectID){
-	var project = {};
-	var projectName = $(".project-wrapper").find("[data-id='" + projectID + "']").find(".project-title").html();
-	var hour = $(".project-wrapper").find("[data-id='" + projectID + "']").find(".hour").html();
-	var color = $("#project-container").find("[data-id='" + projectID + "']").find(".project-main-window").css("backgroundColor");
-	var order = $("#project-container").find("[data-id='" + projectID + "']").attr("data-order");
-	console.log("projectName: " +projectName);
-	console.log("projectID: " +projectID);
-	console.log("color: " +color);
-
-	project['project-'+projectID] = {"id": projectID, "name": projectName, "hour": hour, "color": color, "order": order};
-	console.log("project: " + project);
 	chrome.storage.sync.remove("project-"+projectID, function(){
 		initiatePage();
 	});
@@ -122,7 +160,8 @@ function createProject(){
 	var projectID = new Date().getTime();  // use timestamp as unique id
 	var project = {};
 	var order = $("#project-container .project-wrapper").length + 1;
-	project['project-'+projectID] = {"id": projectID, "name": projectName, "hour": "0", "color": "#7f8c8d", "order": order};
+	var history = []; 
+	project['project-'+projectID] = {"id": projectID, "name": projectName, "hour": "0", "color": "#7f8c8d", "order": order, "history": history};
 	chrome.storage.sync.set(project, function (){
 		console.log("saved");
 	});
@@ -174,7 +213,8 @@ function initiatePage(){
 	});
 	getLastHourLogging();
 	var updateLastHourLoggingInterval = setInterval(updateLastHourLogging, 1000);
-	
+	getHourSummary("today");
+	getHourSummary("this week");
 }
 
 var projectHoverEvent = function(){
@@ -228,8 +268,9 @@ $(document).ready(function(){
 	
 	$(document).on("click", ".add-hour-column a", function(){
 		var projectID = $(this).attr("data-id");
+		var hourIncrement = parseFloat($(this).html());
 		var hour = parseFloat($(this).html()) + parseFloat($(".project-wrapper").find("[data-id='" + projectID + "']").find(".hour").html());
-		changeHour(projectID, hour);
+		changeHour(projectID, hour, hourIncrement);
 	});
 	
 	$(document).on("click", ".change-color", function(){
